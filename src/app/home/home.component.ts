@@ -26,15 +26,24 @@ export class HomeComponent implements OnInit, OnDestroy{
       setInterval(()=> {
         // Next to emmit a new value
         observer.next(count)
+        // Complete to know when  you are done - unsubscribe is auto
+        if (count === 2) {
+          observer.complete()
+        }
+        // Fake error
+        // Error to throw an error - unsubscribe is auto
+        if (count > 3) {
+          observer.error(new Error("Coutner is greater then 3!"))
+        }
         count++
-        // Error to throw an error
-        // Complete to know when  you are done
-      },1000)
+      }, 1000)
     })
 
-    this.intervalSubscribe = custmoIntervalObs.subscribe(data => console.log(data))
+    this.intervalSubscribe = custmoIntervalObs
+      .subscribe((data: any) => console.log(data),
+                                (error: any) => console.error('An error was thrown ', error),
+                                () => console.log("Completed!"))
   }
-
 
   ngOnDestroy(): void {
     this.intervalSubscribe.unsubscribe()
