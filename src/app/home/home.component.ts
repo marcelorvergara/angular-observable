@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription, interval } from 'rxjs'
+import { map, filter  } from 'rxjs/operators'
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy{
         // Next to emmit a new value
         observer.next(count)
         // Complete to know when  you are done - unsubscribe is auto
-        if (count === 2) {
+        if (count === 5) {
           observer.complete()
         }
         // Fake error
@@ -39,10 +40,23 @@ export class HomeComponent implements OnInit, OnDestroy{
       }, 1000)
     })
 
+    // Operators
+    // custmoIntervalObs.pipe(map(data => {
+    //   return data + ' ...';
+    // }))
+
     this.intervalSubscribe = custmoIntervalObs
-      .subscribe((data: any) => console.log(data),
-                                (error: any) => console.error('An error was thrown ', error),
-                                () => console.log("Completed!"))
+      .pipe(
+        filter(data => {
+          return Number(data) % 2 === 0
+        }),
+        map(data => {
+        return data + ' ...';
+      }))
+      .subscribe((data: any) =>
+        console.log('Round:', (data + 1)),
+        (error: any) => console.error('An error was thrown ', error),
+        () => console.log("Completed!"))
   }
 
   ngOnDestroy(): void {
